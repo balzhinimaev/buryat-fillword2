@@ -17,5 +17,22 @@
   "goodJob": "Good job! You're getting there!",
   "keepPracticing": "Keep practicing! Try again!",
   "yourScore": "Your score",
-  "playAgain": "Play Again"
+  "playAgain": "Play Again",
+  "exitQuiz": "Exit",
+  "exitQuizTitle": "Exit Quiz?",
+  "exitQuizMessage": "Your current progress will not be saved. Are you sure you want to exit?",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "profile": "Profile",
+  "joined": "Joined",
+  "testsCompleted": "Tests Completed",
+  "averageScore": "Average Score",
+  "currentStreak": "Current Streak",
+  "days": "days",
+  "totalQuestions": "Total Questions",
+  "bestScore": "Best Score",
+  "viewHistory": "View History",
+  "testHistory": "Test History",
+  "noHistory": "You haven't completed any tests yet. Start a quiz to see your history here!",
+  "back": "Back"
 }

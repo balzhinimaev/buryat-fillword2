@@ -1,36 +1,56 @@
-
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { QUESTIONS } from './constants';
-import type { Question } from './types';
+import type { Question, Difficulty, Screen, TestHistoryItem } from './types';
+import { mockUser, mockTestHistory } from './mocks/userData';
+
+// Import Components
 import QuestionCard from './components/QuestionCard';
 import Scoreboard from './components/Scoreboard';
 import FinalScore from './components/FinalScore';
 import DifficultySelector from './components/DifficultySelector';
-import LanguageSelector from './components/LanguageSelector';
-import { useTranslation } from './hooks/useTranslation';
+import Header from './components/Header';
+import ProfileDrawer from './components/ProfileDrawer';
+import TestHistory from './components/TestHistory';
+import ConfirmModal from './components/ConfirmModal';
 
-type Difficulty = 'Easy' | 'Medium' | 'Hard';
+import { useTranslation } from './hooks/useTranslation';
 
 const App: React.FC = () => {
   const { t } = useTranslation();
+
+  // Navigation and UI State
+  const [screen, setScreen] = useState<Screen>('difficulty');
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isExitModalOpen, setIsExitModalOpen] = useState(false);
+
+  // Game State
   const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
   const [gameQuestions, setGameQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [selectedAnswerIndex, setSelectedAnswerIndex] = useState<number | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
-  const [showFinalScore, setShowFinalScore] = useState(false);
   const [hintsRemaining, setHintsRemaining] = useState(3);
   const [showHint, setShowHint] = useState(false);
 
+  // Data State
+  const [userHistory, setUserHistory] = useState<TestHistoryItem[]>(mockTestHistory);
+
   const currentQuestion = gameQuestions[currentQuestionIndex];
   const isCorrect = isAnswered && selectedAnswerIndex !== null ? currentQuestion?.options[selectedAnswerIndex].isCorrect : null;
+  const isQuizFinished = screen === 'difficulty' && difficulty !== null;
 
   const handleSelectDifficulty = (selectedDifficulty: Difficulty) => {
     const filteredQuestions = QUESTIONS.filter(q => q.difficulty === selectedDifficulty);
     setGameQuestions(filteredQuestions);
     setDifficulty(selectedDifficulty);
     setHintsRemaining(3);
+    setScore(0);
+    setCurrentQuestionIndex(0);
+    setSelectedAnswerIndex(null);
+    setIsAnswered(false);
+    setShowHint(false);
+    setScreen('quiz');
   };
   
   const handleAnswerSelect = useCallback((optionIndex: number) => {
@@ -51,19 +71,29 @@ const App: React.FC = () => {
       setIsAnswered(false);
       setShowHint(false);
     } else {
-      setShowFinalScore(true);
+      // Quiz finished, save to history
+      const newHistoryItem: TestHistoryItem = {
+        id: userHistory.length + 1,
+        date: new Date().toISOString(),
+        difficulty: difficulty!,
+        score: score,
+        total: gameQuestions.length,
+        percentage: Math.round((score / gameQuestions.length) * 100)
+      };
+      setUserHistory(prev => [newHistoryItem, ...prev]);
+      setScreen('difficulty'); // This will trigger the FinalScore view
     }
   };
 
-  const handleRestart = () => {
+  const resetQuizState = () => {
     setDifficulty(null);
     setGameQuestions([]);
     setCurrentQuestionIndex(0);
     setScore(0);
     setSelectedAnswerIndex(null);
     setIsAnswered(false);
-    setShowFinalScore(false);
     setShowHint(false);
+    setScreen('difficulty');
   };
 
   const handleUseHint = () => {
@@ -73,68 +103,91 @@ const App: React.FC = () => {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 text-slate-800 flex items-center justify-center p-4 font-sans">
-      <div className="w-full max-w-3xl mx-auto">
-        <header className="text-center mb-8">
-          <div className="flex justify-center items-center mb-2 relative">
-            <div className="flex-1">
-              <h1 className="text-3xl md:text-4xl font-semibold text-slate-800 mb-1">
-                {t('appTitle')}
-              </h1>
-            </div>
-            <div className="absolute top-0 right-0">
-              <LanguageSelector />
-            </div>
-          </div>
-          <p className="text-slate-600 text-lg mt-2">{t('appSubtitle')}</p>
-        </header>
+  const handleConfirmExit = () => {
+    // Here you could save partial progress if needed
+    setIsExitModalOpen(false);
+    resetQuizState();
+  };
 
-        <main className="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 md:p-10">
-          {difficulty === null ? (
-            <DifficultySelector onSelectDifficulty={handleSelectDifficulty} />
-          ) : showFinalScore ? (
-            <FinalScore score={score} totalQuestions={gameQuestions.length} onRestart={handleRestart} />
-          ) : (
-            currentQuestion && (
-              <>
-                <Scoreboard score={score} currentQuestion={currentQuestionIndex + 1} totalQuestions={gameQuestions.length} hintsRemaining={hintsRemaining} />
-                
-                <div className="my-6 flex justify-end">
+  const renderScreen = () => {
+    if (isQuizFinished) {
+      return <FinalScore score={score} totalQuestions={gameQuestions.length} onRestart={resetQuizState} />;
+    }
+    
+    switch(screen) {
+      case 'history':
+        return <TestHistory history={userHistory} onBack={() => setScreen('difficulty')} />;
+      case 'quiz':
+        return (
+          currentQuestion && (
+            <>
+              <Scoreboard score={score} currentQuestion={currentQuestionIndex + 1} totalQuestions={gameQuestions.length} hintsRemaining={hintsRemaining} />
+              <div className="my-6 flex justify-end">
+                <button
+                  onClick={handleUseHint}
+                  disabled={hintsRemaining === 0 || isAnswered || showHint}
+                  className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-medium py-2 px-4 rounded-xl transition-all duration-200 shadow-sm hover:shadow disabled:bg-slate-200 disabled:text-slate-500 disabled:cursor-not-allowed"
+                >
+                  💡 <span>{t('useHint').replace('💡 ', '')}</span>
+                </button>
+              </div>
+              <QuestionCard
+                question={currentQuestion}
+                onAnswerSelect={handleAnswerSelect}
+                selectedAnswerIndex={selectedAnswerIndex}
+                isAnswered={isAnswered}
+                isCorrect={isCorrect}
+                showHint={showHint}
+              />
+              {isAnswered && (
+                <div className="mt-8 text-center">
                   <button
-                    onClick={handleUseHint}
-                    disabled={hintsRemaining === 0 || isAnswered || showHint}
-                    className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-medium py-2 px-4 rounded-xl transition-all duration-200 shadow-sm hover:shadow disabled:bg-slate-200 disabled:text-slate-500 disabled:cursor-not-allowed"
+                    onClick={handleNextQuestion}
+                    className="w-full md:w-auto bg-slate-800 hover:bg-slate-900 text-white font-medium py-3 px-8 rounded-xl transition-all duration-200 shadow-sm hover:shadow"
                   >
-                    💡
-                    <span>{t('useHint').replace('💡 ', '')}</span>
+                    {currentQuestionIndex < gameQuestions.length - 1 ? t('nextQuestion') : t('finishQuiz')}
                   </button>
                 </div>
+              )}
+            </>
+          )
+        );
+      case 'difficulty':
+      default:
+        return <DifficultySelector onSelectDifficulty={handleSelectDifficulty} />;
+    }
+  };
 
-                <QuestionCard
-                  question={currentQuestion}
-                  onAnswerSelect={handleAnswerSelect}
-                  selectedAnswerIndex={selectedAnswerIndex}
-                  isAnswered={isAnswered}
-                  isCorrect={isCorrect}
-                  showHint={showHint}
-                />
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 text-slate-800 font-sans">
+      <Header 
+        onProfileClick={() => setIsProfileOpen(true)} 
+        showExitButton={screen === 'quiz'}
+        onExitClick={() => setIsExitModalOpen(true)}
+      />
+      <main className="pt-24 pb-8 px-4">
+        <div className="w-full max-w-3xl mx-auto bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-10">
+          {renderScreen()}
+        </div>
+      </main>
 
-                {isAnswered && (
-                  <div className="mt-8 text-center">
-                    <button
-                      onClick={handleNextQuestion}
-                      className="w-full md:w-auto bg-slate-800 hover:bg-slate-900 text-white font-medium py-3 px-8 rounded-xl transition-all duration-200 shadow-sm hover:shadow"
-                    >
-                      {currentQuestionIndex < gameQuestions.length - 1 ? t('nextQuestion') : t('finishQuiz')}
-                    </button>
-                  </div>
-                )}
-              </>
-            )
-          )}
-        </main>
-      </div>
+      <ProfileDrawer
+        user={mockUser}
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+        onHistoryClick={() => {
+          setIsProfileOpen(false);
+          setScreen('history');
+        }}
+      />
+      
+      <ConfirmModal
+        isOpen={isExitModalOpen}
+        title={t('exitQuizTitle')}
+        message={t('exitQuizMessage')}
+        onConfirm={handleConfirmExit}
+        onCancel={() => setIsExitModalOpen(false)}
+      />
     </div>
   );
 };
