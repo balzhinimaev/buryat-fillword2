@@ -1,3 +1,4 @@
+
 import React from 'react';
 import type { Question } from '../types';
 import { useTranslation } from '../hooks/useTranslation';
@@ -33,31 +34,31 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, onAnswerSelect, s
 
   const getOptionClasses = (index: number) => {
     if (!isAnswered) {
-      return "bg-slate-700 hover:bg-slate-600 border-slate-600 hover:border-cyan-500";
+      return "bg-white hover:bg-slate-50 border-slate-200 hover:border-slate-400 text-slate-700";
     }
     const isSelected = selectedAnswerIndex === index;
     const isThisCorrect = question.options[index].isCorrect;
 
     if (isThisCorrect) {
-      return "bg-green-700/50 border-green-500 text-white";
+      return "bg-emerald-50 border-emerald-500 text-emerald-900 font-semibold";
     }
     if (isSelected && !isThisCorrect) {
-      return "bg-red-700/50 border-red-500 text-white";
+      return "bg-rose-50 border-rose-500 text-rose-900 font-semibold";
     }
-    return "bg-slate-700/50 border-slate-600 text-gray-400 cursor-not-allowed";
+    return "bg-slate-50 border-slate-200 text-slate-500 cursor-not-allowed";
   };
   
   return (
     <div className="space-y-6">
-      <div className="bg-slate-900/50 p-6 rounded-lg text-center">
-        <p className="text-2xl md:text-3xl font-medium tracking-wider text-cyan-200">
+      <div className="bg-slate-100 p-6 rounded-2xl text-center">
+        <p className="text-2xl md:text-3xl font-medium text-slate-700">
           {displayedSentence}
         </p>
       </div>
 
       {showHint && (
-        <div className="bg-yellow-900/50 border border-yellow-700 text-yellow-200 p-3 rounded-lg text-center text-lg">
-          {t('hintText')}: <strong className="text-yellow-300 text-xl">"{question.blankWord.charAt(0)}"</strong>
+        <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl text-center text-lg">
+          {t('hintText')}: <strong className="font-semibold text-amber-900">"{question.blankWord.charAt(0)}"</strong>
         </div>
       )}
 
@@ -67,7 +68,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, onAnswerSelect, s
             key={index}
             onClick={() => onAnswerSelect(index)}
             disabled={isAnswered}
-            className={`flex items-center justify-between p-4 rounded-lg border-2 text-lg font-semibold transition-all duration-200 ease-in-out transform hover:scale-105 disabled:transform-none disabled:opacity-75 ${getOptionClasses(index)}`}
+            className={`flex items-center justify-between p-4 rounded-xl border-2 text-lg font-medium transition-all duration-200 disabled:transform-none disabled:opacity-100 ${getOptionClasses(index)}`}
             aria-label={`Answer: ${option.text[language]}`}
           >
             <span>{option.text[language]}</span>

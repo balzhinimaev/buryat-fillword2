@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { QUESTIONS } from './constants';
 import type { Question } from './types';
@@ -76,10 +77,9 @@ const App: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 text-slate-800 flex items-center justify-center p-4 font-sans">
       <div className="w-full max-w-3xl mx-auto">
         <header className="text-center mb-8">
-          <div className="flex justify-between items-start mb-2 relative">
-            <div className="absolute top-0 left-0"></div>
+          <div className="flex justify-center items-center mb-2 relative">
             <div className="flex-1">
-              <h1 className="text-4xl md:text-5xl font-bold text-slate-800 mb-1">
+              <h1 className="text-3xl md:text-4xl font-semibold text-slate-800 mb-1">
                 {t('appTitle')}
               </h1>
             </div>
@@ -87,7 +87,7 @@ const App: React.FC = () => {
               <LanguageSelector />
             </div>
           </div>
-          <p className="text-slate-500 text-lg mt-2">{t('appSubtitle')}</p>
+          <p className="text-slate-600 text-lg mt-2">{t('appSubtitle')}</p>
         </header>
 
         <main className="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 md:p-10">
@@ -100,18 +100,14 @@ const App: React.FC = () => {
               <>
                 <Scoreboard score={score} currentQuestion={currentQuestionIndex + 1} totalQuestions={gameQuestions.length} hintsRemaining={hintsRemaining} />
                 
-                <div className="my-5 flex justify-end">
+                <div className="my-6 flex justify-end">
                   <button
                     onClick={handleUseHint}
                     disabled={hintsRemaining === 0 || isAnswered || showHint}
-                    className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-medium py-2.5 px-5 rounded-xl transition-all duration-200 shadow-sm hover:shadow disabled:bg-slate-300 disabled:text-slate-500 disabled:cursor-not-allowed"
+                    className="flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-medium py-2 px-4 rounded-xl transition-all duration-200 shadow-sm hover:shadow disabled:bg-slate-200 disabled:text-slate-500 disabled:cursor-not-allowed"
                   >
-                    {t('useHint').startsWith('💡') ? (
-                      <>
-                        <span role="img" aria-label="light bulb">💡</span>
-                        {t('useHint').replace('💡 ', '')}
-                      </>
-                    ) : t('useHint')}
+                    💡
+                    <span>{t('useHint').replace('💡 ', '')}</span>
                   </button>
                 </div>
 
@@ -125,7 +121,7 @@ const App: React.FC = () => {
                 />
 
                 {isAnswered && (
-                  <div className="mt-6 text-center">
+                  <div className="mt-8 text-center">
                     <button
                       onClick={handleNextQuestion}
                       className="w-full md:w-auto bg-slate-800 hover:bg-slate-900 text-white font-medium py-3 px-8 rounded-xl transition-all duration-200 shadow-sm hover:shadow"

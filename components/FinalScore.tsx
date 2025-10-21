@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useTranslation } from '../hooks/useTranslation';
 
@@ -22,20 +23,20 @@ const FinalScore: React.FC<FinalScoreProps> = ({ score, totalQuestions, onRestar
 
   return (
     <div className="text-center flex flex-col items-center justify-center py-8">
-      <h2 className="text-3xl font-bold text-cyan-400 mb-2">{t('quizCompleted')}</h2>
-      <p className="text-xl text-slate-300 mb-4">{message}</p>
-      <div className="text-5xl font-bold my-6">
-        <span className={percentage >= 50 ? "text-green-400" : "text-red-400"}>
+      <h2 className="text-3xl font-semibold text-slate-800 mb-2">{t('quizCompleted')}</h2>
+      <p className="text-lg text-slate-600 mb-6">{message}</p>
+      <div className="text-6xl font-semibold my-4">
+        <span className={percentage >= 50 ? "text-emerald-500" : "text-rose-500"}>
           {score}
         </span>
-        <span className="text-3xl text-slate-400"> / {totalQuestions}</span>
+        <span className="text-4xl text-slate-400"> / {totalQuestions}</span>
       </div>
-      <div className="text-2xl text-slate-200 mb-8">
-          {t('yourScore')}: <span className="font-bold text-cyan-400">{percentage}%</span>
+      <div className="text-xl text-slate-600 mb-8">
+          {t('yourScore')}: <span className="font-semibold text-slate-800">{percentage}%</span>
       </div>
       <button
         onClick={onRestart}
-        className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-10 rounded-lg text-lg transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-500/50"
+        className="bg-slate-800 hover:bg-slate-900 text-white font-medium py-3 px-8 rounded-xl transition-all duration-200 shadow-sm hover:shadow"
       >
         {t('playAgain')}
       </button>

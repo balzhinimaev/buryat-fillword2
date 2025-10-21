@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useTranslation } from '../hooks/useTranslation';
 
@@ -24,7 +25,7 @@ const DifficultySelector: React.FC<DifficultySelectorProps> = ({ onSelectDifficu
           <button
             key={level}
             onClick={() => onSelectDifficulty(level)}
-            className={`${colors} text-white font-medium py-4 px-12 rounded-2xl text-lg transition-all duration-200 shadow-sm hover:shadow-md`}
+            className={`${colors} text-white font-medium py-3 px-10 rounded-2xl text-lg transition-all duration-200 shadow-sm hover:shadow-md`}
           >
             {t(key)}
           </button>
