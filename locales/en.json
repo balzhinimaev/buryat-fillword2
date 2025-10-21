@@ -1,0 +1,21 @@
+{
+  "appTitle": "Buryat Fillword Challenge",
+  "appSubtitle": "Learn the Buryat language!",
+  "chooseDifficulty": "Choose a Difficulty",
+  "easy": "Easy",
+  "medium": "Medium",
+  "hard": "Hard",
+  "question": "Question",
+  "score": "Score",
+  "hints": "Hints",
+  "useHint": "💡 Use Hint",
+  "hintText": "Hint: The word starts with",
+  "nextQuestion": "Next Question",
+  "finishQuiz": "Finish Quiz",
+  "quizCompleted": "Quiz Completed!",
+  "excellent": "Excellent! Congratulations!",
+  "goodJob": "Good job! You're getting there!",
+  "keepPracticing": "Keep practicing! Try again!",
+  "yourScore": "Your score",
+  "playAgain": "Play Again"
+}
